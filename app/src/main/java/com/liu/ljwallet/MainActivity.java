@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void initBackground(){
         try {
-            Thread.sleep(1000);
+            Thread.sleep(2000);
             Intent intent = new Intent(this, IndexActivity.class);
             startActivity(intent);
         } catch (InterruptedException e) {
