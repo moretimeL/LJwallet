@@ -14,7 +14,7 @@
         android:background="@drawable/banner"/>
 
     <Button
-        android:id="@+id/crete_wallet"
+        android:id="@+id/create_wallet"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
