@@ -13,6 +13,14 @@ import android.widget.TextView;
 import com.liu.ljwallet.R;
 import com.liu.ljwallet.util.RxToast;
 
+import org.bitcoinj.crypto.MnemonicCode;
+import org.bitcoinj.crypto.MnemonicException;
+
+import java.io.IOException;
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.List;
+
 public class CreateWalletActivity extends AppCompatActivity {
 
 
@@ -73,6 +81,22 @@ public class CreateWalletActivity extends AppCompatActivity {
                     // TODO 点击创建后的逻辑
                     if (!passWord.equals(rePassword)){
                         RxToast.warning("两次密码不一致！");
+                    }
+                    MnemonicCode mnemonicCode = null;
+                    List<String> wd = null;
+                    try {
+                        mnemonicCode = new MnemonicCode(e.getContext().getAssets().open("english.txt"), null);
+                        SecureRandom secureRandom = new SecureRandom();
+                        byte[] initialEntropy = new byte[16];//算法需要，必须是被4整除
+                        secureRandom.nextBytes(initialEntropy);
+                        wd = mnemonicCode.toMnemonic(initialEntropy);
+                    } catch (MnemonicException.MnemonicLengthException mnemonicLengthException) {
+                        mnemonicLengthException.printStackTrace();
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
+                    if (wd == null || wd.size() < 12){
+                        RxToast.error("创建钱包失败！");
                     }
                 });
             }else {
