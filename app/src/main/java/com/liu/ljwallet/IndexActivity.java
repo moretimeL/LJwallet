@@ -41,7 +41,6 @@ public class IndexActivity extends AppCompatActivity {
     private void exitApp() {
         // 判断2次点击事件时间
         if ((System.currentTimeMillis() - exitTime) > 2000) {
-            Toast.makeText(getApplicationContext(), "再按一次退出程序", Toast.LENGTH_SHORT).show();
             exitTime = System.currentTimeMillis();
         } else {
             // 退出程序关键代码
