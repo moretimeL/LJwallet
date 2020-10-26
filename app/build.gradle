@@ -1,10 +1,14 @@
-plugins {
-    id 'com.android.application'
-}
+apply plugin: 'com.android.application'
+apply plugin: 'org.greenrobot.greendao'
+
 
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.2"
+
+    greendao {
+        schemaVersion 1 //当前数据库版本
+    }
 
     defaultConfig {
         applicationId "com.liu.ljwallet"
@@ -35,6 +39,7 @@ android {
 }
 
 dependencies {
+    implementation 'org.greenrobot:greendao:3.3.0' // 添加库
     implementation 'com.jakewharton:butterknife:8.8.1'
     androidTestImplementation 'com.jakewharton:butterknife-compiler:8.8.1'
     implementation 'androidx.appcompat:appcompat:1.2.0'
@@ -45,3 +50,4 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 }
+
