@@ -10,7 +10,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.liu.ljwallet.IndexActivity;
 import com.liu.ljwallet.R;
+import com.liu.ljwallet.db.DbController;
+import com.liu.ljwallet.entity.MyWallet;
 import com.liu.ljwallet.util.BTCWalletUtil;
 import com.liu.ljwallet.util.RxToast;
 
@@ -72,6 +75,7 @@ public class CreateWalletActivity extends AppCompatActivity {
 
         @Override
         public void afterTextChanged(Editable s) {
+            DbController dbController = DbController.getInstance(CreateWalletActivity.this);
             String username = usernameText.getText().toString();
             String passWord = passText.getText().toString();
             String rePassword = rePassText.getText().toString();
@@ -84,9 +88,22 @@ public class CreateWalletActivity extends AppCompatActivity {
                         RxToast.warning("两次密码不一致！");
                     }
                     List<String> wd = BTCWalletUtil.generateMnemonic(e.getContext());
+                    String seedCode = "";
                     if (wd == null || wd.size() < 12){
                         RxToast.error("创建钱包失败！");
+                        return;
                     }
+                    for (String s1 : wd) {
+                        seedCode += s1 + " ";
+                    }
+                    MyWallet myWallet = new MyWallet();
+                    myWallet.setId(1L);
+                    myWallet.setIsBackup(false);
+                    myWallet.setIsCurrent(true);
+                    myWallet.setUserName(username);
+                    myWallet.setPassword(passWord);
+                    myWallet.setSeedCode(seedCode.substring(0,seedCode.length() - 1));
+                    dbController.insertOrReplace(myWallet);
 
 
                 });
