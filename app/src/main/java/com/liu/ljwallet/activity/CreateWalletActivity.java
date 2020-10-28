@@ -2,6 +2,7 @@ package com.liu.ljwallet.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -83,7 +84,6 @@ public class CreateWalletActivity extends AppCompatActivity {
                 createButton.setBackgroundResource(R.drawable.shape_create_on);
                 createButton.setEnabled(true);
                 createButton.setOnClickListener(e->{
-                    // TODO 点击创建后的逻辑
                     if (!passWord.equals(rePassword)){
                         RxToast.warning("两次密码不一致！");
                     }
@@ -104,8 +104,9 @@ public class CreateWalletActivity extends AppCompatActivity {
                     myWallet.setPassword(passWord);
                     myWallet.setSeedCode(seedCode.substring(0,seedCode.length() - 1));
                     dbController.insertOrReplace(myWallet);
-
-
+                    Intent intent = new Intent(CreateWalletActivity.this, BackUpSeedActivity.class);
+                    intent.putExtra("seed", seedCode);
+                    startActivity(intent);
                 });
             }else {
                 createButton.setBackgroundResource(R.drawable.shape_create_close);

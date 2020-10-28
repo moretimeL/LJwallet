@@ -30,6 +30,9 @@ public class TitleBar extends LinearLayout{
         if (context.getClass().getSimpleName().equals("ImportWalletActivity")){
             titleView.setText("导入钱包");
         }
+        if (context.getClass().getSimpleName().equals("BackUpSeedActivity")){
+            titleView.setText("备份助记词");
+        }
         backButton.setOnClickListener(e->{
             ((Activity) context).finish();
         });
