@@ -104,6 +104,15 @@ public class DbController {
         List<MyWallet>personInfors = (List<MyWallet>) myWalletDao.queryBuilder().where(MyWalletDao.Properties.Id.eq(id)).build().unique();
         return personInfors;
     }
+
+    /**
+     * 按id查询
+     * @param id
+     * @return
+     */
+    public MyWallet getById(Long id){
+        return myWalletDao.loadByRowId(id);
+    }
     /**
      * 查询所有数据
      */
