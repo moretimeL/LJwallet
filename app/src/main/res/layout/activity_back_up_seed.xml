@@ -1,11 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".activity.BackUpSeedActivity">
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:orientation="vertical">
+
     <com.liu.ljwallet.layout.TitleBar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+
+<TextView
+    android:id="@+id/textView"
+    android:layout_width="235dp"
+    android:layout_height="wrap_content"
+    android:text="备份助记词"
+    android:textSize="15dp"
+    android:textStyle="bold"
+    android:layout_marginTop="20dp"
+    android:layout_marginLeft="30dp"/>
+
+<TextView
+    android:id="@+id/textView2"
+    android:layout_width="265dp"
+    android:layout_height="wrap_content"
+    android:textSize="15dp"
+    android:layout_marginLeft="30dp"
+    android:layout_marginTop="10dp"
+    android:text="请按顺序抄写助记词,确保备份正确。"
+    tools:layout_editor_absoluteX="20dp"
+    tools:layout_editor_absoluteY="76dp" />
+
+
+<TableLayout
+    android:id="@+id/table1"
+    android:layout_width="334dp"
+    android:layout_height="0dp"
+    android:layout_weight="1"
+    android:layout_gravity="center_horizontal"
+    android:layout_marginTop="20dp"
+    android:layout_marginBottom="20dp"></TableLayout>
+
+<LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal">
+
+    <TextView
+        android:id="@+id/backUpSeed"
+        android:layout_width="300dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="20dp"
+        android:textColor="#ffffff"
+        android:gravity="center"
+        android:textSize="20dp"
+        android:background="@drawable/shape_create_on"
+        android:text="已完成备份"
+        />
+</LinearLayout>
+
+
 </LinearLayout>

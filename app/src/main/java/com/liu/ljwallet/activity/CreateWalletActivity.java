@@ -20,6 +20,7 @@ import com.liu.ljwallet.util.RxToast;
 
 import org.bitcoinj.crypto.MnemonicCode;
 import org.bitcoinj.crypto.MnemonicException;
+import org.bitcoinj.wallet.Wallet;
 
 import java.io.IOException;
 import java.security.SecureRandom;
@@ -96,13 +97,16 @@ public class CreateWalletActivity extends AppCompatActivity {
                     for (String s1 : wd) {
                         seedCode += s1 + " ";
                     }
+                    seedCode = seedCode.substring(0,seedCode.length() - 1);
+                    Wallet wallet = BTCWalletUtil.getFromSpeed(seedCode);
                     MyWallet myWallet = new MyWallet();
+                    myWallet.setAddress(wallet.currentReceiveAddress().toString());
                     myWallet.setId(1L);
                     myWallet.setIsBackup(false);
                     myWallet.setIsCurrent(true);
                     myWallet.setUserName(username);
                     myWallet.setPassword(passWord);
-                    myWallet.setSeedCode(seedCode.substring(0,seedCode.length() - 1));
+                    myWallet.setSeedCode(seedCode);
                     dbController.insertOrReplace(myWallet);
                     Intent intent = new Intent(CreateWalletActivity.this, BackUpSeedActivity.class);
                     intent.putExtra("seed", seedCode);
