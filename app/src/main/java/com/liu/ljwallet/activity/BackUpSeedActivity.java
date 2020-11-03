@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -28,6 +29,7 @@ public class BackUpSeedActivity extends AppCompatActivity {
     }
 
     public void initView(){
+        TextView backUpSeed = findViewById(R.id.backUpSeed);
         Intent intent = getIntent();
         String seed = intent.getStringExtra("seed");
         List<String> seeds = Arrays.asList(seed.split(" "));
@@ -47,7 +49,11 @@ public class BackUpSeedActivity extends AppCompatActivity {
                 tableRow=new TableRow(BackUpSeedActivity.this);
             }
         }
-        System.out.println(seeds);
+        backUpSeed.setOnClickListener(e->{
+            Intent intent1 = new Intent(BackUpSeedActivity.this, ConfirmSeedActivity.class);
+            intent1.putExtra("seed", seed);
+            startActivity(intent1);
+        });
 
 
     }

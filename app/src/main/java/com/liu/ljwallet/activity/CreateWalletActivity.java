@@ -20,6 +20,7 @@ import com.liu.ljwallet.util.RxToast;
 
 import org.bitcoinj.crypto.MnemonicCode;
 import org.bitcoinj.crypto.MnemonicException;
+import org.bitcoinj.kits.WalletAppKit;
 import org.bitcoinj.wallet.Wallet;
 
 import java.io.IOException;
@@ -103,7 +104,7 @@ public class CreateWalletActivity extends AppCompatActivity {
                     if (myWallet1 == null){
                         Wallet wallet = BTCWalletUtil.getFromSpeed(seedCode);
                         MyWallet myWallet = new MyWallet();
-                        myWallet.setAddress(wallet.currentReceiveAddress().toString());
+                        myWallet.setAddress(wallet.currentReceiveAddress().toBase58());
                         myWallet.setId(1L);
                         myWallet.setIsBackup(false);
                         myWallet.setIsCurrent(true);
@@ -112,8 +113,11 @@ public class CreateWalletActivity extends AppCompatActivity {
                         myWallet.setSeedCode(seedCode);
                         dbController.insertOrReplace(myWallet);
                     }
-                    Wallet wallet = BTCWalletUtil.getFromSpeed(myWallet1.getSeedCode());
-                    System.out.println(wallet.currentReceiveAddress());
+                    Wallet wallet = BTCWalletUtil.getFromSpeed("balcony harsh atom match use boring wild jacket inmate hospital mirror orphan");
+                /*    BTCWalletUtil.refreshWallet(CreateWalletActivity.this,wallet);
+                    WalletAppKit appKit =  BTCWalletUtil.getWalletKit(CreateWalletActivity.this, "balcony harsh atom match use boring wild jacket inmate hospital mirror orphan");
+                    BTCWalletUtil.send(appKit, "n3Wa1iv5jSuez2EeKZiP2hBshD5iiMzLAJ", "0.01");*/
+                    System.out.println(wallet.currentReceiveAddress().toBase58());
                     System.out.println(wallet.toString());
                     Intent intent = new Intent(CreateWalletActivity.this, BackUpSeedActivity.class);
                     intent.putExtra("seed", seedCode);
