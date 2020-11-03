@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import com.liu.ljwallet.R;
+import com.liu.ljwallet.enums.ActivityEnum;
 
 public class TitleBar extends LinearLayout{
 

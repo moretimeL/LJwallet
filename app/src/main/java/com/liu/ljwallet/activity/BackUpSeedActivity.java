@@ -40,7 +40,7 @@ public class BackUpSeedActivity extends AppCompatActivity {
         for(int i=0;i<seeds.size();i++){
             TextView tv = new TextView(BackUpSeedActivity.this);
             tv.setGravity(Gravity.CENTER);
-            tv.setText(i+". "+seeds.get(i));
+            tv.setText(i+1+". "+seeds.get(i));
             tableRow.addView(tv);
             if((i+1)%3==0){
                 tableLayout.addView(tableRow, new TableLayout.LayoutParams(MP, WC,1));

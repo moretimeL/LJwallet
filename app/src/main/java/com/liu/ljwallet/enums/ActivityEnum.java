@@ -3,7 +3,8 @@ package com.liu.ljwallet.enums;
 public enum  ActivityEnum {
     CREATE_WALLET("CreateWalletActivity","创建钱包"),
     IMPORT_WALLET("ImportWalletActivity","导入钱包"),
-    BACK_UP_SEED ("BackUpSeedActivity","备份助记词");
+    BACK_UP_SEED ("BackUpSeedActivity","备份助记词"),
+    CONFIRM_SEED ("ConfirmSeedActivity","确认助记词");
 
     ActivityEnum(String className, String title) {
         this.className = className;

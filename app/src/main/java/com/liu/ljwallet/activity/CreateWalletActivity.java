@@ -87,6 +87,7 @@ public class CreateWalletActivity extends AppCompatActivity {
                 createButton.setOnClickListener(e->{
                     if (!passWord.equals(rePassword)){
                         RxToast.warning("两次密码不一致！");
+                        return;
                     }
                     List<String> wd = BTCWalletUtil.generateMnemonic(e.getContext());
                     String seedCode = "";
@@ -98,16 +99,22 @@ public class CreateWalletActivity extends AppCompatActivity {
                         seedCode += s1 + " ";
                     }
                     seedCode = seedCode.substring(0,seedCode.length() - 1);
-                    Wallet wallet = BTCWalletUtil.getFromSpeed(seedCode);
-                    MyWallet myWallet = new MyWallet();
-                    myWallet.setAddress(wallet.currentReceiveAddress().toString());
-                    myWallet.setId(1L);
-                    myWallet.setIsBackup(false);
-                    myWallet.setIsCurrent(true);
-                    myWallet.setUserName(username);
-                    myWallet.setPassword(passWord);
-                    myWallet.setSeedCode(seedCode);
-                    dbController.insertOrReplace(myWallet);
+                    MyWallet myWallet1 = dbController.getById(1L);
+                    if (myWallet1 == null){
+                        Wallet wallet = BTCWalletUtil.getFromSpeed(seedCode);
+                        MyWallet myWallet = new MyWallet();
+                        myWallet.setAddress(wallet.currentReceiveAddress().toString());
+                        myWallet.setId(1L);
+                        myWallet.setIsBackup(false);
+                        myWallet.setIsCurrent(true);
+                        myWallet.setUserName(username);
+                        myWallet.setPassword(passWord);
+                        myWallet.setSeedCode(seedCode);
+                        dbController.insertOrReplace(myWallet);
+                    }
+                    Wallet wallet = BTCWalletUtil.getFromSpeed(myWallet1.getSeedCode());
+                    System.out.println(wallet.currentReceiveAddress());
+                    System.out.println(wallet.toString());
                     Intent intent = new Intent(CreateWalletActivity.this, BackUpSeedActivity.class);
                     intent.putExtra("seed", seedCode);
                     startActivity(intent);
