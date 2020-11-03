@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    android:background="@android:color/transparent">
+    <ImageView
+        android:id="@+id/indexMenu"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginLeft="10dp"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/menu"/>
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:text="钱包"
+        android:textSize="20dp"
+        android:textColor="#999999"
+        android:gravity="center"
+        />
+    <ImageView
+        android:id="@+id/getQR"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginRight="10dp"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/get_qr"/>
+</LinearLayout>
