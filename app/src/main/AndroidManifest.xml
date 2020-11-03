@@ -9,7 +9,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.LJwallet">
-        <activity android:name=".activity.ConfirmSeedActivity"></activity>
+        <activity android:name=".activity.MyWalletActivity"></activity>
+        <activity android:name=".activity.ConfirmSeedActivity" />
         <activity android:name=".activity.BackUpSeedActivity" />
         <activity android:name=".activity.ImportWalletActivity" />
         <activity android:name=".activity.CreateWalletActivity" />

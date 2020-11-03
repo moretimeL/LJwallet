@@ -72,7 +72,8 @@ public class ConfirmSeedActivity extends AppCompatActivity {
                 if (index.get() > 11){
                     sureBackUp.setBackgroundResource(R.drawable.shape_create_on);
                     sureBackUp.setOnClickListener(a->{
-
+                        Intent intent1 = new Intent(ConfirmSeedActivity.this, MyWalletActivity.class);
+                        startActivity(intent1);
                     });
                 }
             });
