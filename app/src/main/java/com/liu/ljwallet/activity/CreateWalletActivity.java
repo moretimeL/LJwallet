@@ -16,6 +16,7 @@ import com.liu.ljwallet.R;
 import com.liu.ljwallet.db.DbController;
 import com.liu.ljwallet.entity.MyWallet;
 import com.liu.ljwallet.util.BTCWalletUtil;
+import com.liu.ljwallet.util.ETHWalletUtil;
 import com.liu.ljwallet.util.RxToast;
 
 import org.bitcoinj.crypto.MnemonicCode;
@@ -90,7 +91,9 @@ public class CreateWalletActivity extends AppCompatActivity {
                         RxToast.warning("两次密码不一致！");
                         return;
                     }
-                    List<String> wd = BTCWalletUtil.generateMnemonic(e.getContext());
+
+                    // BTC流程
+                    /*List<String> wd = BTCWalletUtil.generateMnemonic(e.getContext());
                     String seedCode = "";
                     if (wd == null || wd.size() < 12){
                         RxToast.error("创建钱包失败！");
@@ -105,6 +108,21 @@ public class CreateWalletActivity extends AppCompatActivity {
                         Wallet wallet = BTCWalletUtil.getFromSpeed(seedCode);
                         MyWallet myWallet = new MyWallet();
                         myWallet.setAddress(wallet.currentReceiveAddress().toBase58());
+                        myWallet.setId(1L);
+                        myWallet.setIsBackup(false);
+                        myWallet.setIsCurrent(true);
+                        myWallet.setUserName(username);
+                        myWallet.setPassword(passWord);
+                        myWallet.setSeedCode(seedCode);
+                        dbController.insertOrReplace(myWallet);
+                    }*/
+
+                    String seedCode = ETHWalletUtil.mnemonics();
+                    ETHWalletUtil.createWalletBySeed(seedCode);
+                    MyWallet myWallet1 = dbController.getById(1L);
+                    if (myWallet1 == null){
+                        MyWallet myWallet = new MyWallet();
+                        myWallet.setAddress(ETHWalletUtil.ADDRESS);
                         myWallet.setId(1L);
                         myWallet.setIsBackup(false);
                         myWallet.setIsCurrent(true);

@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             DbController dbController = DbController.getInstance(MainActivity.this);
             MyWallet myWallet1 = dbController.getById(1L);
-            Thread.sleep(2000);
+            Thread.sleep(500);
             if (myWallet1 == null){
                 Intent intent = new Intent(this, IndexActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);

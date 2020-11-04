@@ -13,6 +13,7 @@ import com.liu.ljwallet.R;
 import com.liu.ljwallet.db.DbController;
 import com.liu.ljwallet.entity.MyWallet;
 import com.liu.ljwallet.util.BTCWalletUtil;
+import com.liu.ljwallet.util.ETHWalletUtil;
 import com.liu.ljwallet.util.RxToast;
 
 import org.bitcoinj.wallet.Wallet;
@@ -79,7 +80,8 @@ public class ImportWalletActivity extends AppCompatActivity {
                         RxToast.warning("两次密码不一致！");
                         return;
                     }
-                    List<String> wd = Arrays.asList(seedCode[0].split("\\ "));
+                    // BTC流程
+                    /*List<String> wd = Arrays.asList(seedCode[0].split("\\ "));
                     if (wd == null || wd.size() < 12){
                         RxToast.error("钱包格式错误！");
                         return;
@@ -89,6 +91,19 @@ public class ImportWalletActivity extends AppCompatActivity {
                         Wallet wallet = BTCWalletUtil.getFromSpeed(seedCode[0]);
                         MyWallet myWallet = new MyWallet();
                         myWallet.setAddress(wallet.currentReceiveAddress().toBase58());
+                        myWallet.setId(1L);
+                        myWallet.setIsBackup(false);
+                        myWallet.setIsCurrent(true);
+                        myWallet.setUserName("user");
+                        myWallet.setPassword(passWord);
+                        myWallet.setSeedCode(seedCode[0]);
+                        dbController.insertOrReplace(myWallet);
+                    }*/
+                    ETHWalletUtil.createWalletBySeed(seedCode[0]);
+                    MyWallet myWallet1 = dbController.getById(1L);
+                    if (myWallet1 == null){
+                        MyWallet myWallet = new MyWallet();
+                        myWallet.setAddress(ETHWalletUtil.ADDRESS);
                         myWallet.setId(1L);
                         myWallet.setIsBackup(false);
                         myWallet.setIsCurrent(true);

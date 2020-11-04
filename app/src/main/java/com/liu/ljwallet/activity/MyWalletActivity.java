@@ -2,8 +2,10 @@ package com.liu.ljwallet.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.view.KeyEvent;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -13,12 +15,16 @@ import com.google.zxing.WriterException;
 import com.liu.ljwallet.R;
 import com.liu.ljwallet.db.DbController;
 import com.liu.ljwallet.entity.MyWallet;
+import com.liu.ljwallet.layout.CopyButtonLibrary;
 import com.liu.ljwallet.util.BTCWalletUtil;
 import com.liu.ljwallet.util.Contents;
+import com.liu.ljwallet.util.ETHWalletUtil;
 import com.liu.ljwallet.util.QRCodeEncoder;
 
 import org.bitcoinj.kits.WalletAppKit;
 import org.bitcoinj.wallet.Wallet;
+
+import jnr.ffi.annotations.In;
 
 public class MyWalletActivity extends AppCompatActivity {
 
@@ -26,6 +32,10 @@ public class MyWalletActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_wallet);
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
         initView();
     }
     
@@ -33,10 +43,14 @@ public class MyWalletActivity extends AppCompatActivity {
     public void initView(){
         TextView address = findViewById(R.id.address);
         TextView balance = findViewById(R.id.balance);
+        TextView goSend = findViewById(R.id.goSend);
         DbController dbController = DbController.getInstance(MyWalletActivity.this);
         MyWallet myWallet1 = dbController.getById(1L);
-        WalletAppKit appKit =  BTCWalletUtil.getWalletKit(MyWalletActivity.this, myWallet1.getSeedCode());
-        balance.setText("￥"+appKit.wallet().getBalance().value+"");
+        // BTC流程
+        /*WalletAppKit appKit =  BTCWalletUtil.getWalletKit(MyWalletActivity.this, myWallet1.getSeedCode());
+        balance.setText("￥"+appKit.wallet().getBalance().value+"");*/
+        ETHWalletUtil.createWalletBySeed(myWallet1.getSeedCode());
+        balance.setText(ETHWalletUtil.getBalance(myWallet1.getAddress()).toString());
         address.setText(myWallet1.getAddress());
         ImageView imageView = findViewById(R.id.image_QR_code);
         Bitmap bitmap = null;
@@ -49,6 +63,15 @@ public class MyWalletActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         imageView.setImageBitmap(bitmap);
+        address.setOnClickListener(e->{
+            //传入需要复制的文字的控件
+            CopyButtonLibrary copyButtonLibrary = new CopyButtonLibrary(getApplicationContext(),address);
+            copyButtonLibrary.init();
+        });
+        goSend.setOnClickListener(e->{
+            Intent intent = new Intent(MyWalletActivity.this, SendActivity.class);
+            startActivity(intent);
+        });
     }
 
     @Override
