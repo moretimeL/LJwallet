@@ -13,8 +13,12 @@ import com.google.zxing.WriterException;
 import com.liu.ljwallet.R;
 import com.liu.ljwallet.db.DbController;
 import com.liu.ljwallet.entity.MyWallet;
+import com.liu.ljwallet.util.BTCWalletUtil;
 import com.liu.ljwallet.util.Contents;
 import com.liu.ljwallet.util.QRCodeEncoder;
+
+import org.bitcoinj.kits.WalletAppKit;
+import org.bitcoinj.wallet.Wallet;
 
 public class MyWalletActivity extends AppCompatActivity {
 
@@ -28,8 +32,11 @@ public class MyWalletActivity extends AppCompatActivity {
     
     public void initView(){
         TextView address = findViewById(R.id.address);
+        TextView balance = findViewById(R.id.balance);
         DbController dbController = DbController.getInstance(MyWalletActivity.this);
         MyWallet myWallet1 = dbController.getById(1L);
+        WalletAppKit appKit =  BTCWalletUtil.getWalletKit(MyWalletActivity.this, myWallet1.getSeedCode());
+        balance.setText("￥"+appKit.wallet().getBalance().value+"");
         address.setText(myWallet1.getAddress());
         ImageView imageView = findViewById(R.id.image_QR_code);
         Bitmap bitmap = null;
