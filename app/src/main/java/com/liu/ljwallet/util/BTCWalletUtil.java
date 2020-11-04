@@ -1,7 +1,11 @@
 package com.liu.ljwallet.util;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
+import android.util.Log;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.BlockChain;
@@ -41,6 +45,18 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 public class BTCWalletUtil {
+
+
+    private static final String TAG = "BlockChainService";
+
+    public static final String USER_AGENT = "Bitcoin Wallet";
+
+    public static final String ACTION_BROADCAST_TRANSACTION = "action_broadcast_transaction";
+    public static final String ACTION_BROADCAST_TRANSACTION_HASH = "action_broadcast_transaction_hash";
+
+    private static SPVBlockStore blockStore;
+    private static PeerGroup peerGroup;
+    private static BlockChain blockChain;
     /**
      * 通过Wallet 获取 助记词
      * @param context
@@ -121,10 +137,10 @@ public class BTCWalletUtil {
             return err;
 
         }
-        if(walletAppKit.wallet().getBalance().isLessThan(Coin.parseCoin(amount))) {
+        /*if(walletAppKit.wallet().getBalance().isLessThan(Coin.parseCoin(amount))) {
             err = "You got not enough coins";
             return err;
-        }
+        }*/
         SendRequest request = SendRequest.to(Address.fromBase58(params, recipientAddress), Coin.parseCoin(amount));
         try {
             walletAppKit.wallet().completeTx(request);
@@ -172,52 +188,65 @@ public class BTCWalletUtil {
         }
         walletAppKit.startAsync();
         walletAppKit.awaitRunning();
+        System.out.println(walletAppKit.wallet().toString());
         return  walletAppKit;
     }
 
     public static void refreshWallet(Context context,Wallet wallet){
-        // Set up the components and link them together.
-        final NetworkParameters params = TestNet3Params.get();
-        BlockStore blockStore = null;
-        try {
-            blockStore = new SPVBlockStore(params, context.getCacheDir());
-        } catch (BlockStoreException e) {
-            e.printStackTrace();
+        Log.d(TAG, "createBlockChain: ");
+        File blockChainFile = new File(context.getDir("blockstore", Context.MODE_PRIVATE), "blockchain");
+        boolean blockChainFileExists = blockChainFile.exists();
+        if (!blockChainFileExists) {
+            wallet.reset();
         }
 
-//加载检查点
-        final InputStream checkpointsInputStream;
         try {
-            checkpointsInputStream = context.getAssets().open("checkpoints-testnet.txt");
-            CheckpointManager.checkpoint(params, checkpointsInputStream,
-                    blockStore, System.currentTimeMillis());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (BlockStoreException e) {
-            e.printStackTrace();
-        }
-        BlockChain chain = null;
-        try {
-            chain = new BlockChain(params, wallet, blockStore);
-        } catch (BlockStoreException e) {
-            e.printStackTrace();
-        }
+            blockStore = new SPVBlockStore(TestNet3Params.get(), blockChainFile);
+            blockStore.getChainHead(); // detect corruptions as early as possible
 
-        final PeerGroup peerGroup = new PeerGroup(params, chain);
-        peerGroup.startAsync();
-        peerGroup.addWallet(wallet);
-        wallet.addCoinsReceivedEventListener(new WalletCoinsReceivedEventListener() {
-            @Override
-            public synchronized void onCoinsReceived(Wallet w, Transaction tx, Coin prevBalance, Coin newBalance) {
-                System.out.println("\nReceived tx " + tx.getHash());
-                System.out.println(tx.toString());
+            final long earliestKeyCreationTime = wallet.getEarliestKeyCreationTime();
+
+            if (!blockChainFileExists && earliestKeyCreationTime > 0) {
+                try {
+                    final InputStream checkpointsInputStream = context.getAssets()
+                            .open("checkpoints-testnet.txt");
+                    CheckpointManager.checkpoint(TestNet3Params.get(), checkpointsInputStream,
+                            blockStore, earliestKeyCreationTime);
+                } catch (final IOException x) {
+                    x.printStackTrace();
+                }
             }
-        });
+        } catch (final BlockStoreException x) {
+            blockChainFile.delete();
+            x.printStackTrace();
+        }
+        try {
+            blockChain = new BlockChain(TestNet3Params.get(), wallet, blockStore);
+        } catch (final BlockStoreException x) {
+            throw new Error("blockchain cannot be created", x);
+        }
+        startup(context,wallet);
+    }
 
-        //添加节点探索器，重要
+
+    private static void startup(Context context,Wallet wallet) {
+        PeerGroup peerGroup = new PeerGroup(TestNet3Params.get(), blockChain);
+        peerGroup.setDownloadTxDependencies(0); // recursive implementation causes StackOverflowError
+        peerGroup.addWallet(wallet);
+        try {
+            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_ACTIVITIES);
+            peerGroup.setUserAgent(USER_AGENT, packageInfo.versionName);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        peerGroup.setMaxConnections(8);
+        int connectTimeout = (int) (15 * DateUtils.SECOND_IN_MILLIS);
+        peerGroup.setConnectTimeoutMillis(connectTimeout);
+        int discoveryTimeout = (int) (10 * DateUtils.SECOND_IN_MILLIS);
+        peerGroup.setPeerDiscoveryTimeoutMillis(discoveryTimeout);
         peerGroup.addPeerDiscovery(new PeerDiscovery() {
             private final PeerDiscovery normalPeerDiscovery = MultiplexingDiscovery
-                    .forServices(params, 0);
+                    .forServices(TestNet3Params.get(), 0);
 
             @Override
             public InetSocketAddress[] getPeers(final long services, final long timeoutValue,
@@ -230,7 +259,7 @@ public class BTCWalletUtil {
                 normalPeerDiscovery.shutdown();
             }
         });
-        // Now download and process the block chain.
+        peerGroup.startAsync();
         peerGroup.startBlockChainDownload(null);
     }
 
