@@ -12,9 +12,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.liu.ljwallet.R;
 import com.liu.ljwallet.db.DbController;
 import com.liu.ljwallet.entity.MyWallet;
+import com.liu.ljwallet.entity.Transaction;
 import com.liu.ljwallet.util.ETHWalletUtil;
 import com.liu.ljwallet.util.RxToast;
 
+import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 public class SendActivity extends AppCompatActivity {
@@ -72,7 +74,10 @@ public class SendActivity extends AppCompatActivity {
                 sendSubBut.setBackgroundResource(R.drawable.shape_create_on);
                 sendSubBut.setEnabled(true);
                 sendSubBut.setOnClickListener(e->{
-                    TransactionReceipt transactionReceipt = ETHWalletUtil.sendCoin(toAddress, tranNum);
+                    Transaction transaction = ETHWalletUtil.sendCoin(toAddress, tranNum);
+                    if (transaction!=null && transaction.getTransactionHash()!=null){
+                        dbController.insert(transaction);
+                    }
                     Intent intent = new Intent(SendActivity.this, MyWalletActivity.class);
                     startActivity(intent);
                 });

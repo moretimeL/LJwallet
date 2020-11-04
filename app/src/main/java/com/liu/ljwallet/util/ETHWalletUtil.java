@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.provider.Settings;
 
 import com.google.common.collect.ImmutableList;
+import com.liu.ljwallet.entity.Transaction;
 
 import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicHierarchy;
@@ -14,16 +15,21 @@ import org.bitcoinj.crypto.MnemonicCode;
 import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.ECKeyPair;
+import org.web3j.crypto.RawTransaction;
+import org.web3j.crypto.TransactionEncoder;
 import org.web3j.crypto.Wallet;
 import org.web3j.crypto.WalletFile;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.Web3jFactory;
 import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.core.methods.response.EthGetTransactionCount;
+import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.exceptions.TransactionException;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.Transfer;
 import org.web3j.utils.Convert;
+import org.web3j.utils.Numeric;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -88,40 +94,41 @@ public class ETHWalletUtil {
         return Convert.fromWei(balance.toString(), Convert.Unit.ETHER).setScale(4, BigDecimal.ROUND_DOWN);
     }
 
-    public static TransactionReceipt sendCoin(String toAddress, String tranNum){
-        TransactionReceipt transactionReceipt = null;
+    public static Transaction sendCoin(String toAddress, String tranNum){
+        Transaction transaction = new Transaction();
         try {
             Web3j mWeb3j = Web3jFactory.build(new HttpService("https://ropsten.infura.io/v3/f725a1cacbf94934be7491d925a62b37"));
-            BigInteger gasPrice = mWeb3j.ethGasPrice().send().getGasPrice();
-            BigInteger balance = mWeb3j.ethGetBalance(ETHWalletUtil.ADDRESS, DefaultBlockParameterName.LATEST).send().getBalance();
+            Credentials credentials = Credentials.create(Wallet.decrypt("", ETHWalletUtil.WALLET_FILE));
             BigDecimal value = new BigDecimal(tranNum);
-            String to = toAddress.trim();
-            BigDecimal money = Convert.fromWei(balance.toString(), Convert.Unit.ETHER);
-            BigDecimal gas = Convert.fromWei(gasPrice.toString(), Convert.Unit.ETHER);
-            if (money.compareTo(gas.add(value)) < 0) {
-               // TODO 余额不足
-                Credentials credentials = Credentials.create(Wallet.decrypt("", ETHWalletUtil.WALLET_FILE));
-                transactionReceipt = Transfer.sendFunds(
-                        mWeb3j, credentials, to, value, Convert.Unit.ETHER)
-                        .send();
-            } else {
-                Credentials credentials = Credentials.create(Wallet.decrypt("", ETHWalletUtil.WALLET_FILE));
-                transactionReceipt = Transfer.sendFunds(
-                        mWeb3j, credentials, to, value, Convert.Unit.ETHER)
-                        .send();
+            //这个方法就是自动加的，不需要自己存了。。
+            EthGetTransactionCount ethGetTransactionCount = mWeb3j.ethGetTransactionCount( credentials.getAddress(), DefaultBlockParameterName.LATEST).send();
+            BigInteger nonce = ethGetTransactionCount.getTransactionCount();
+
+            BigInteger bigAmount=Convert.toWei(value, Convert.Unit.ETHER).toBigInteger();
+            BigInteger bigGas=Convert.toWei(56+"", Convert.Unit.GWEI).toBigInteger();
+            //创建交易  交易序号，gas ，gaslimit ，address，value；
+            RawTransaction rawTransaction = RawTransaction.createEtherTransaction( nonce, bigGas,Convert.toWei("21000", Convert.Unit.WEI).toBigInteger(), toAddress,bigAmount);
+
+            // 签名交易 并转换为16进制
+            byte[] signedMessage = TransactionEncoder.signMessage(rawTransaction, credentials);
+            String hexValue = Numeric.toHexString(signedMessage);
+            //发送交易 发送完了或获取一个交易的hash值，这个值可以在区块链浏览器上查询当前交易的结果
+            EthSendTransaction ethSendTransaction = mWeb3j.ethSendRawTransaction(hexValue).send();
+            if (ethSendTransaction.getTransactionHash()!=null&&ethSendTransaction.getTransactionHash()!=""){
+                transaction.setFrom(ETHWalletUtil.ADDRESS);
+                transaction.setTo(toAddress);
+                transaction.setNum(tranNum);
+                transaction.setGasUsed("2WEI");
+                transaction.setTransactionHash(ethSendTransaction.getTransactionHash());
             }
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         } catch (CipherException e) {
             e.printStackTrace();
-        } catch (TransactionException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
+        }  catch (Exception e) {
             e.printStackTrace();
         }
-        return transactionReceipt;
+        return transaction;
     }
 }
 

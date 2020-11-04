@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.liu.ljwallet.entity.MyWallet;
+import com.liu.ljwallet.entity.Transaction;
 
 import java.util.List;
 
@@ -33,6 +34,11 @@ public class DbController {
      */
     private MyWalletDao myWalletDao;
 
+    /**
+     * dao
+     */
+    private TransactionDao transactionDao;
+
     private static DbController mDbController;
 
     /**
@@ -58,6 +64,7 @@ public class DbController {
         mDaoMaster =new DaoMaster(getWritableDatabase());
         mDaoSession = mDaoMaster.newSession();
         myWalletDao = mDaoSession.getMyWalletDao();
+        transactionDao = mDaoSession.getTransactionDao();
     }
     /**
      * 获取可读数据库
@@ -89,12 +96,19 @@ public class DbController {
     public void insertOrReplace(MyWallet myWallet){
         myWalletDao.insertOrReplace(myWallet);
     }
+
+
+    public void insertOrReplace(Transaction transaction){ transactionDao.insertOrReplace(transaction); }
     /**插入一条记录，表里面要没有与之相同的记录
      *
      * @param myWallet
      */
     public long insert(MyWallet myWallet){
         return  myWalletDao.insert(myWallet);
+    }
+
+    public long insert(Transaction transaction){
+        return  transactionDao.insert(transaction);
     }
 
     /**
@@ -118,6 +132,11 @@ public class DbController {
      */
     public List<MyWallet> searchAll(){
         List<MyWallet>personInfors=myWalletDao.queryBuilder().list();
+        return personInfors;
+    }
+
+    public List<Transaction> searchAllTransaction(){
+        List<Transaction>personInfors=transactionDao.queryBuilder().list();
         return personInfors;
     }
     /**

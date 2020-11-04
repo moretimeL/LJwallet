@@ -85,6 +85,12 @@
             android:text="去转帐"/>
 
     </LinearLayout>
+    <LinearLayout
+        android:id="@+id/transactionList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+    </LinearLayout>
 
     <TableLayout
         android:id="@+id/table_record"
