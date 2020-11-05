@@ -118,7 +118,7 @@ public class ETHWalletUtil {
                 transaction.setFrom(ETHWalletUtil.ADDRESS);
                 transaction.setTo(toAddress);
                 transaction.setNum(tranNum);
-                transaction.setGasUsed("2WEI");
+                transaction.setGasUsed("56WEI");
                 transaction.setTransactionHash(ethSendTransaction.getTransactionHash());
             }
         } catch (IOException e) {

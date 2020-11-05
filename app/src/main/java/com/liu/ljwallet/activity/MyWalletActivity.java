@@ -68,6 +68,16 @@ public class MyWalletActivity extends AppCompatActivity {
             hash.setText("hash:"+transaction.getTransactionHash());
             fee.setText("fee:"+transaction.getGasUsed());
             num.setText("num:"+transaction.getNum());
+            to.setOnClickListener(e->{
+                //传入需要复制的文字的控件
+                CopyButtonLibrary copyButtonLibrary = new CopyButtonLibrary(getApplicationContext(),to);
+                copyButtonLibrary.init();
+            });
+            hash.setOnClickListener(e->{
+                //传入需要复制的文字的控件
+                CopyButtonLibrary copyButtonLibrary = new CopyButtonLibrary(getApplicationContext(),hash);
+                copyButtonLibrary.init();
+            });
             one.addView(to, new LinearLayout.LayoutParams(MP,0,1));
             one.addView(hash, new LinearLayout.LayoutParams(MP,0,2));
             one.addView(fee, new LinearLayout.LayoutParams(MP,0,1));
