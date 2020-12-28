@@ -56,9 +56,6 @@ public class MyWalletActivity extends AppCompatActivity {
         List<Transaction> transactions = dbController.searchAllTransaction();
         for (Transaction transaction : transactions) {
             LinearLayout one = new LinearLayout(MyWalletActivity.this);
-            one.setLeft(20);
-            one.setRight(20);
-            one.setTop(20);
             one.setOrientation(LinearLayout.VERTICAL);
             TextView to = new TextView(MyWalletActivity.this);
             TextView hash = new TextView(MyWalletActivity.this);
@@ -82,7 +79,9 @@ public class MyWalletActivity extends AppCompatActivity {
             one.addView(hash, new LinearLayout.LayoutParams(MP,0,2));
             one.addView(fee, new LinearLayout.LayoutParams(MP,0,1));
             one.addView(num, new LinearLayout.LayoutParams(MP,0,1));
-            linearLayout.addView(one, new LinearLayout.LayoutParams(MP,0,1));
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(MP,0,1);
+            params.setMargins(50,10,50,10);
+            linearLayout.addView(one, params);
 
         }
         MyWallet myWallet1 = dbController.getById(1L);
